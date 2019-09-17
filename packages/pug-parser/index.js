@@ -218,6 +218,8 @@ Parser.prototype = {
         return this.parseExtends();
       case 'include':
         return this.parseInclude();
+      case 'css':
+        return this.parseCss();
       case 'doctype':
         return this.parseDoctype();
       case 'filter':
@@ -776,6 +778,44 @@ loop:
     };
     return node;
   },
+
+  /**
+   * css block
+   */
+
+  parseCss: function(){
+    var tok = this.expect('css');
+    console.log(tok)
+    var node = {
+      type: 'Tag',
+      name: 'link',
+      selfClosing: false,
+      attrs: [
+        {
+          name: "rel",
+          val: "'stylesheet'",
+          line: tok.loc.start.line,
+          column: tok.loc.start.column + 5,
+          filename: "this.filename",
+          mustEscape: true
+        },
+        {
+          name: "href",
+          val: "'" + tok.code + "'",
+          line: tok.loc.start.line,
+          column: tok.loc.start.column + 7,
+          filename: this.filename,
+          mustEscape: true
+        }
+      ],
+      attributeBlocks: [],
+      line: tok.loc.start.line,
+      column: tok.loc.start.column,
+      filename: this.filename
+    };
+    return node;
+  },
+
   /**
    * 'extends' name
    */

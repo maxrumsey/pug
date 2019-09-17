@@ -1005,6 +1005,32 @@ Lexer.prototype = {
   },
 
   /**
+   * EachOf.
+   */
+
+  css: function() {
+    var captures;
+    if (captures = /^(css) (.*)/.exec(this.input)) {
+      this.consume(captures[0].length);
+      var tok = this.tok('css', captures[1]);
+      tok.value = captures[1];
+      this.incrementColumn(captures[0].length - captures[1].length);
+      this.assertExpression(captures[2])
+      tok.code = captures[2];
+      this.incrementColumn(captures[2].length);
+      this.tokens.push(this.tokEnd(tok));
+
+      return true;
+    }
+    if (captures = /^css *\n/.exec(this.input)) {
+      this.error(
+        'MALFORMED_CSS',
+        'The css block should be formatted like this: \'css LINKTOSTYLESHEET\'.'
+      );
+    }
+  },
+
+  /**
    * Code.
    */
 
@@ -1505,6 +1531,7 @@ Lexer.prototype = {
       || this.callLexerFunction('endInterpolation')
       || this.callLexerFunction('yield')
       || this.callLexerFunction('doctype')
+      || this.callLexerFunction('css')
       || this.callLexerFunction('interpolation')
       || this.callLexerFunction('case')
       || this.callLexerFunction('when')
